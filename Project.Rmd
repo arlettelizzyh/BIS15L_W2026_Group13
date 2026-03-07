@@ -71,6 +71,10 @@ insects <- insects %>%
   rename(lt_mean_annual_avg_ns_temp = long_term_mean_annual_average_near_surface_temperature)
 ```
 
+```{r}
+write_csv(insects, "data/insects_main.csv")
+```
+
 ##Data Exploration - Andrei
 ```{r}
 insects_ag <- insects
