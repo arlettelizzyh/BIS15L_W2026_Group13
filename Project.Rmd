@@ -77,19 +77,19 @@ write_csv(insects, "data/insects_main.csv")
 
 ##Data Exploration - Andrei
 ```{r}
-insects_ag <- insects
+insects_ag <- read.csv("data/insects_main.csv")
 ```
 
 
 ##Data Exploration - Arlette
 ```{r}
-insects_ah <- insects
+insects_ah <- read.csv("data/insects_main.csv")
 ```
 
 
 ##Data Exploration - Tyler
 ```{r}
-insects_ts <- insects
+insects_ts <- read.csv("data/insects_main.csv")
 ```
 
 
