@@ -9,14 +9,14 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-##Load Libraries
+##Load the Libraries
 ```{r}
 library(tidyverse)
 library(janitor)
 library(naniar)
 ```
 
-##Load Data
+##Load in Data
 ```{r}
 insects <- read_csv2("data/insect_raw/Data_Uhler_2021_main.csv") %>%
   clean_names()
@@ -61,8 +61,42 @@ insects %>%
 
 ```{r}
 #rename average_temperature to avg_temp
+insects <- insects %>%
+  rename(avg_temp = average_temperature) %>%
 #rename average_humidity to avg_humidity
+  rename(avg_humidity = average_humidity) %>%
 #rename long_term_mean_annual_precipitation to lt_mean_annual_precip
+  rename(lt_mean_annual_precip = long_term_mean_annual_precipitation) %>%
 #rename long_term_mean_annual_average_near_surface_temperature to lt_mean_annual_avg_ns_temp
+  rename(lt_mean_annual_avg_ns_temp = long_term_mean_annual_average_near_surface_temperature)
 ```
 
+##Data Exploration - Andrei
+```{r}
+insects_ag <- insects
+```
+
+
+##Data Exploration - Arlette
+```{r}
+insects_ah <- insects
+```
+
+
+##Data Exploration - Tyler
+```{r}
+insects_ts <- insects
+```
+
+
+##Shiny App - Andrei
+
+
+
+
+##Shiny App - Arlette
+
+
+
+
+##Shiny App - Tyler
