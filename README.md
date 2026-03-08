@@ -4,7 +4,7 @@ This is the repository for our group project!
 ## Group Members
 + Arlette 
 + Tyler 
-+ Andrel
++ Andrei
 
 ## Data Source
 **Dataset**: https://datadryad.org/dataset/doi:10.5061/dryad.zkh1893bb 
