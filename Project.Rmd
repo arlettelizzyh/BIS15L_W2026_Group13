@@ -89,7 +89,6 @@ temp_coord_table <- temp_coord_table %>%
   mutate(long = st_coordinates(.)[,1], lat = st_coordinates(.)[,2])
 #join temp table to insects table using full_join()
 insects <- full_join(insects, temp_coord_table, by="sample_id")
-
 ```
 
 ```{r}
@@ -98,7 +97,7 @@ insects %>%
   select(sample_id, long, lat, geometry) %>%
   glimpse()
 
-#All good, nothing to left to correct.
+#All good, nothing left to correct.
 #No date splitting in main cleaned data to avoid column clutter (start_month, end_month, etc.)
 ```
 
@@ -108,18 +107,21 @@ write_csv(insects, "data/insects_main.csv")
 
 ##Data Exploration - Andrei
 ```{r}
+#load cleaned data as own variable (to not alter others' work)
 insects_ag <- read.csv("data/insects_main.csv")
 ```
 
 
 ##Data Exploration - Arlette
 ```{r}
+#load cleaned data as own variable (to not alter others' work)
 insects_ah <- read.csv("data/insects_main.csv")
 ```
 
 
 ##Data Exploration - Tyler
 ```{r}
+#load cleaned data as own variable (to not alter others' work)
 insects_ts <- read.csv("data/insects_main.csv")
 ```
 
