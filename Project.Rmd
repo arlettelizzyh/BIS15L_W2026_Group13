@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(janitor)
 library(naniar)
+library(sf)
+library(ggmap)
 ```
 
 ##Load in Data
@@ -69,6 +71,35 @@ insects <- insects %>%
   rename(lt_mean_annual_precip = long_term_mean_annual_precipitation) %>%
 #rename long_term_mean_annual_average_near_surface_temperature to lt_mean_annual_avg_ns_temp
   rename(lt_mean_annual_avg_ns_temp = long_term_mean_annual_average_near_surface_temperature)
+```
+
+```{r}
+#translate coordinates from ETRS89/UTM zone 32N to WGS84, EPSG:4326 (longitude, latitude)
+
+#give each sample a unique ID #
+insects <- insects %>%
+  mutate(sample_id = row_number())
+#copy point_x, point_y, and sample_id to new temp table
+temp_coord_table <- insects %>%
+  select(point_x, point_y, sample_id)
+#convert and save coordinates
+temp_coord_table <- temp_coord_table %>%
+  st_as_sf(coords = c("point_x", "point_y"), crs = 25832) %>%
+  st_transform(crs = 4326) %>%
+  mutate(long = st_coordinates(.)[,1], lat = st_coordinates(.)[,2])
+#join temp table to insects table using full_join()
+insects <- full_join(insects, temp_coord_table, by="sample_id")
+
+```
+
+```{r}
+#check structure of new columns
+insects %>%
+  select(sample_id, long, lat, geometry) %>%
+  glimpse()
+
+#All good, nothing to left to correct.
+#No date splitting in main cleaned data to avoid column clutter (start_month, end_month, etc.)
 ```
 
 ```{r}
