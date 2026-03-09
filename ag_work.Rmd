@@ -72,10 +72,10 @@ map1<- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 5)
 
 ggmap(map1)
 ```
-
+##the map is supposed to be in Germany...
 ```{r}
 ggmap(map1)+
-  geom_point(data = insects, aes(point_x, point_y), size = 0.5, color = "black", alpha= 0.8)+
+  geom_point(data = insects, aes(point_x, point_y), size = 1, color = "black", alpha= 0.8)+
   labs(x= "longitude",
        y= "latitude",
        title = "insect")
