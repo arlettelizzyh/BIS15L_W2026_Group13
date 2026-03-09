@@ -247,13 +247,19 @@ insects_ts <- read.csv("data/insects_main.csv")
 
 
 ##Shiny App - Andrei
+```{r, eval=F, echo=T}
 
-
+```
 
 
 ##Shiny App - Arlette
+```{r, eval=F, echo=T}
 
-
+```
 
 
 ##Shiny App - Tyler
+```{r, eval=F, echo=T}
+
+```
+
