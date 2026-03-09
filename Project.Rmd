@@ -119,6 +119,125 @@ insects_ag <- read.csv("data/insects_main.csv")
 insects_ah <- read.csv("data/insects_main.csv")
 ```
 
+```{r}
+#check data structure
+insects_ah %>%
+  glimpse()
+```
+
+#My Questions: How does the number of red-listed species compare across landscape & plot type?
+
+landscape_type & plot_type:
+```{r}
+#Variable Definitions:
+# RL_Richness = No. of species on red-lists for Bavaria/Germany per plot & time frame.
+# Landscape_Type = Landscape category of quadrant (agricultural, semi-natural, or urban).
+# Plot_Type = Habitat category of plot (arable field, forest, meadow, natural, or settlement).
+# Landscape (Quadrant) > Plot
+
+#check landscape_type vs rl_richness
+insects_ah %>%
+  group_by(landscape_type) %>%
+  select(landscape_type, rl_richness) %>%
+  na.omit() %>%
+  summarize(total_rl_richness = sum(rl_richness), n = n()) %>%
+  arrange(desc(total_rl_richness))
+
+#Sampling is even across landscape types
+#Semi-natural >> Urban > Agricultural (pesticides?)
+```
+
+```{r}
+#check plot_type vs rl_richness
+insects_ah %>%
+  group_by(plot_type) %>%
+  select(plot_type, rl_richness) %>%
+  na.omit() %>%
+  summarize(total_rl_richness = sum(rl_richness), n = n()) %>%
+  arrange(desc(total_rl_richness))
+
+#Sampling uneven across plot types. Forests may have just been more prevalent.
+#Arable fields sampling on par with meadow & greater than settlement but have much less redlist species.
+#Forest >>> Meadow > Settlement >> Arable Field (pesticides?)
+```
+
+```{r}
+#cluster column chart of landscape_type vs rl_richness by plot_type
+insects_ah %>%
+  group_by(landscape_type, plot_type) %>%
+  select(landscape_type, plot_type, rl_richness) %>%
+  na.omit() %>%
+  summarize(total_rl_richness = sum(rl_richness),
+            .groups='keep') %>%
+  ggplot(mapping=aes(x = reorder(landscape_type, total_rl_richness),
+                     y = total_rl_richness,
+                     fill = plot_type))+
+  geom_col(position = "dodge", color = "black", na.rm=T)+
+  coord_flip()+
+  labs(x = "Landscape", y = NULL,
+       title = "No. of Redlist Species Found by Landscape & Plot",
+       fill = "Plot")
+```
+
+```{r}
+#boxplot of landscape_type vs rl_richness by plot_type
+insects_ah %>%
+  group_by(landscape_type, plot_type) %>%
+  select(landscape_type, plot_type, rl_richness) %>%
+  na.omit() %>%
+  ggplot(mapping=aes(x = reorder(landscape_type, rl_richness),
+                     y = rl_richness,
+                     fill = plot_type))+
+  geom_boxplot(na.rm = T)+
+  labs(x = "Landscape", y = NULL,
+       title = "No. of Redlist Species Found by Landscape & Plot",
+       fill = "Plot")
+```
+
+Build a Map:
+```{r}
+#register
+register_stadiamaps("1ad11010-4c59-42b0-a160-0dab4e61577f", write = FALSE)
+```
+
+```{r}
+#get mins and maxes for longitude & latitude
+insects_ah %>%
+  select(c(lat, long, rl_richness)) %>%
+  filter(lat != "NA" & long != "NA" & rl_richness != "NA") %>% #omit NAs
+  summary()
+```
+
+```{r}
+#set latitude and longitude ranges
+lat <- c(46.12, 48.76)
+long <- c(10.59, 13.41)
+#make bbox with 3% (f=0.03) buffer
+bbox <- make_bbox(long, lat, f=0.03)
+```
+
+```{r}
+#load map
+map <- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 7)
+```
+
+```{r}
+#plot map by landscape type
+ggmap(map)+
+  geom_point(data=insects_ah %>%
+               filter(rl_richness > 0),
+             aes(long, lat, shape = landscape_type), color="black", size=2, alpha=0.3)+
+  labs(x="Longitude", y="Latitude", title="Locations of Redlist Species by Landscape Type")
+```
+
+```{r}
+#plot map by plot type
+ggmap(map)+
+  geom_point(data=insects_ah %>%
+               filter(rl_richness > 0),
+             aes(long, lat, shape = plot_type), color="black", size=2, alpha=0.3)+
+  labs(x="Longitude", y="Latitude", title="Locations of Redlist Species by Plot Type")
+```
 
 ##Data Exploration - Tyler
 ```{r}
