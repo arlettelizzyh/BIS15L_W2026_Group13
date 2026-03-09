@@ -8,7 +8,6 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
 ## R Markdown
 ##Load the Libraries
 ```{r}
@@ -19,51 +18,43 @@ library(ggmap)
 library(leaflet)
 library(sf)
 ```
-
 ##Load in Data
 ```{r}
-insects <- read_csv("data/insect_raw/Data_Uhler_2021_main.csv") %>% clean_names()
-
+insects_ag <- read_csv("data/insects_main.csv") %>% clean_names()
 ```
+#check data structure
 ```{r}
-names(insects)
+glimpse(insects_ag)
 ```
+#check NA's
+```{r}
+insects_ag%>%
+  miss_var_summary()
+```
+#omit the NA's, and assign new name
+```{r}
+insects_ag_no_na<- insects_ag%>%
+na.omit()
+```
+#yay no more NA's :)
+```{r}
+insects_ag_no_na%>%
+  miss_var_summary()
+```
+# map
+```{r}
+insects_ag_no_na %>% 
+  select(lat, long) %>% 
+  summary()
+```
+
 ```{r}
 register_stadiamaps("824e1e2a-26b0-4511-874e-b93a502f5dce", write = FALSE)
 ```
 
 ```{r}
-insects%>%
-  select(point_x, point_y)%>%
-  summary()
-```
-
-point_x: Longitude of the study plot, coordinate system as "ETRS89 / UTM zone 32N".
-point_y: Latitude of the study plot,  coordinate system as "ETRS89 / UTM zone 32N".
-##NOT IN LONGITUDE/LATITUDE, needs to be translated :(
-```{r}
-df<- data.frame(
-  plot_id = c("A", "B"),
-  point_x = c(3525643, 3834635),
-  point_y = c(5282797, 5582171)
-)
-pts<- st_as_sf(df, coords = c("point_x", "point_y"), crs = 25832)
-
-pts_11<- st_transform(pts, 4326)
-st_coordinates(pts_11)
-```
-
-```{r}
-pts_11<- st_transform(pts, 4326)
-plot(pts_11)
-``` 
-X        Y
-[1,] 45.14208 41.56423
-[2,] 49.57366 42.51977
-
-```{r}
-lat<- c(45.14208, 41.56423 )
-long<- c(49.57366, 42.51977)
+lat<- c(46.12, 48.75 )
+long<- c(10.59, 13.41)
 bbox<- make_bbox(long, lat, f=0.05)
 ```
 #map of where the data came from (hopefully)
@@ -72,12 +63,56 @@ map1<- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 5)
 
 ggmap(map1)
 ```
-##the map is supposed to be in Germany...
 ```{r}
 ggmap(map1)+
-  geom_point(data = insects, aes(point_x, point_y), size = 1, color = "black", alpha= 0.8)+
-  labs(x= "longitude",
-       y= "latitude",
-       title = "insect")
+  geom_point(data=insects_ag_no_na, aes(long, lat), size=0.8)+
+  labs(x="longitude", y="latitude", title="sites of data collection")
+```
+#different color??
+```{r}
+insects_ag_no_na%>%
+  group_by(avg_temp,avg_humidity)%>%
+  ggplot(aes(x = avg_temp, fill = avg_humidity))+
+  geom_density(color = 'black',
+               fill = 'pink3', 
+               alpha = 0.3,
+               na.rm=TRUE)+
+  labs(x = "average temperature",
+        title = "average temperature compared to average humidity")
+```
+```{r}
+insects_ag_no_na%>%
+  group_by(biomass,landscape_type)%>%
+  ggplot(aes(x = biomass, fill = landscape_type))+
+  geom_boxplot(na.rm=TRUE)+
+  labs(x = "average temperature",
+       y = "biomass",
+        title = "biomass per landscape type")
+```
+```{r}
+insects_ag_no_na%>%
+  group_by(lt_mean_annual_precip,lt_mean_annual_avg_ns_temp)%>%
+  ggplot(aes(x = lt_mean_annual_avg_ns_temp, y = lt_mean_annual_precip))+
+  geom_point(na.rm=TRUE)+
+  labs(x = "average temperature",
+        title = "uhhhhh")
+```
+
+
+
+#move this code chunk somewhere else
+```{r}
+insects_ag_no_na %>%
+  group_by(landscape_type) %>%
+  select(biomass, landscape_type)%>%
+  summarize(mean(biomass))
+
+#Agricultural landscape type has the highest biomass on average
+```
+#avg temp/avg humidity
+#lt_mean_annual_precip/lt_mean_annual_avg_ns_temp
+#biomass/landscape
+```{r}
+
 ```
 
