@@ -16,6 +16,7 @@ library(janitor)
 library(naniar)
 library(sf)
 library(ggmap)
+library(paletteer)
 ```
 
 ##Load in Data
@@ -86,7 +87,7 @@ temp_coord_table <- insects %>%
 temp_coord_table <- temp_coord_table %>%
   st_as_sf(coords = c("point_x", "point_y"), crs = 25832) %>%
   st_transform(crs = 4326) %>%
-  mutate(long = st_coordinates(.)[,1], lat = st_coordinates(.)[,2])
+  mutate(lat = st_coordinates(.)[,1], long = st_coordinates(.)[,2] - 30)
 #join temp table to insects table using full_join()
 insects <- full_join(insects, temp_coord_table, by="sample_id")
 ```
