@@ -498,6 +498,84 @@ insects_ts %>%
 
 ## Shiny App - Tyler, Arlette, Andrei
 ```{r, eval=F, echo=T}
+ui <- dashboardPage(
+  
+  dashboardHeader(title="Take A Closer Look!"),
+  
+  dashboardSidebar(disable = T),
+  
+  dashboardBody(
+    
+    h3("Choose Landscape Type and Plot Type:"),
+    
+    radioButtons("lnd_type", "Landscape Type:",
+               choices = c("All", "Agricultural", "Semi-natural", "Urban"),
+               selected = "All", inline = TRUE),
+    
+    radioButtons("plt_type", "Plot Type:",
+               choices = c("All", "settlement", "meadow", "arable field", "forest"),
+               selected = "All", inline = TRUE),
+    
+    h3("Select Plot:"),
+    
+    selectInput("x",
+              "Select Plot",
+              choices=NULL),
+    
+    #plotOutput("plot", width="500px", height="400px")
+    h3("Plot Info:"),
+    
+    h4("Total Biomass Collected In Grams:"),
+    textOutput("biomass"),
+    
+    h4("Total Number of Species on the Red List:"),
+    textOutput("rl")
+  )
+)
 
+server <- function(input, output, session) {
+  
+  observe({
+    updated_choices <- insects_ts
+    
+    # Apply Radio Button Filter 1
+    if (input$lnd_type != "All") {
+      updated_choices <- updated_choices %>% filter(landscape_type == input$lnd_type)
+    }
+    
+    # Apply Radio Button Filter 2
+    if (input$plt_type != "All") {
+      updated_choices <- updated_choices %>% filter(plot_type == input$plt_type)
+    }
+    
+  ids <- sort(unique(updated_choices$plotid))
+  
+  updateSelectInput(session, "x", choices = ids)
+  
+  })
+  
+  output$biomass <- renderText({
+    req(input$x) 
+    insects_ts %>% 
+      filter(plotid == input$x, excluded!=1) %>% 
+      group_by(plotid) %>% 
+      summarize(biomass_tot=sum(biomass)) %>% 
+      pull(biomass_tot) %>% 
+      as.character()
+  })
+  
+  output$rl <- renderText({
+    req(input$x) 
+    insects_ts %>% 
+      filter(plotid == input$x, excluded!=1) %>% 
+      group_by(plotid) %>% 
+      summarize(rl_richness_tot=sum(rl_richness, na.rm = T)) %>% 
+      pull(rl_richness_tot) %>% 
+      as.character()
+  })
+  
+}
+
+shinyApp(ui, server)
 ```
 
