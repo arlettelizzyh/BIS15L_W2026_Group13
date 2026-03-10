@@ -9,8 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-##Load the Libraries
-```{r}
+## Load the Libraries
+```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(janitor)
 library(naniar)
@@ -21,19 +21,19 @@ library(shiny)
 library(shinydashboard)
 ```
 
-##Load in Data
+## Load in Data
 ```{r}
 insects <- read_csv2("data/insect_raw/Data_Uhler_2021_main.csv") %>%
   clean_names()
 ```
 
-##Check Data Structure
+## Check Data Structure
 ```{r}
 insects %>%
   glimpse()
 ```
 
-##Clean Data - Arlette
+## Clean Data - Arlette
 ```{r}
 #clean possible hidden NAs from character variables
 insects <- insects %>%
@@ -108,14 +108,14 @@ insects %>%
 write_csv(insects, "data/insects_main.csv")
 ```
 
-##Data Exploration - Andrei
+## Data Exploration - Andrei
 ```{r}
 #load cleaned data as own variable (to not alter others' work)
 insects_ag <- read.csv("data/insects_main.csv")
 ```
 
 
-##Data Exploration - Arlette
+## Data Exploration - Arlette
 ```{r}
 #load cleaned data as own variable (to not alter others' work)
 insects_ah <- read.csv("data/insects_main.csv")
@@ -127,7 +127,7 @@ insects_ah %>%
   glimpse()
 ```
 
-#My Questions: How does the number of red-listed species compare across landscape & plot type?
+My Questions: How does the number of red-listed species compare across landscape & plot type?
 
 landscape_type & plot_type:
 ```{r}
@@ -241,26 +241,26 @@ ggmap(map)+
   labs(x="Longitude", y="Latitude", title="Locations of Redlist Species by Plot Type")
 ```
 
-##Data Exploration - Tyler
+## Data Exploration - Tyler
 ```{r}
 #load cleaned data as own variable (to not alter others' work)
 insects_ts <- read.csv("data/insects_main.csv")
 ```
 
 
-##Shiny App - Andrei
+## Shiny App - Andrei
 ```{r, eval=F, echo=T}
 
 ```
 
 
-##Shiny App - Arlette
+## Shiny App - Arlette
 ```{r, eval=F, echo=T}
 
 ```
 
 
-##Shiny App - Tyler
+## Shiny App - Tyler
 ```{r, eval=F, echo=T}
 
 ```
