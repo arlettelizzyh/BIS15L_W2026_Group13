@@ -386,6 +386,9 @@ ggmap(map)+
 ```
 
 ## Data Exploration - Tyler
+
+My Questions: How does the biomass collected (g) compare across landscape & plot type?
+
 ```{r}
 #load cleaned data as own variable (to not alter others' work)
 insects_ts <- read_csv("data/insects_main.csv")
@@ -538,12 +541,10 @@ server <- function(input, output, session) {
   observe({
     updated_choices <- insects_ts
     
-    # Apply Radio Button Filter 1
     if (input$lnd_type != "All") {
       updated_choices <- updated_choices %>% filter(landscape_type == input$lnd_type)
     }
     
-    # Apply Radio Button Filter 2
     if (input$plt_type != "All") {
       updated_choices <- updated_choices %>% filter(plot_type == input$plt_type)
     }
