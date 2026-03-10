@@ -433,7 +433,7 @@ insects_ts %>%
   geom_boxplot()+
   labs(title = "Range of Biomass Found by Landscape and Plot Type",
        x="Landscape Type",
-       y = NULL,
+       y = "Biomass (g)",
        fill = "Plot Type")+
   theme_linedraw()
 ```
@@ -448,7 +448,7 @@ insects_ts %>%
   geom_boxplot()+
   labs(title = "Range of Biomass Found by Plot and Landscape Type",
        x="Plot Type",
-       y = NULL,
+       y = "Biomass (g)",
        fill = "Landscape Type")+
   theme_linedraw()
 ```
@@ -494,7 +494,7 @@ insects_ts %>%
   geom_boxplot()+
   labs(title = "Range of Total Plot Biomass by Plot Type and Landscape Type",
        x="Plot Type",
-       y = NULL,
+       y = "Total Plot Biomass (g)",
        fill = "Landscape Type")+
   theme_linedraw()
 ```
