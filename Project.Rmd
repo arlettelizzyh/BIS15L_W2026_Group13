@@ -320,7 +320,8 @@ insects_ah %>%
   coord_flip()+
   labs(x = "Landscape", y = NULL,
        title = "No. of Redlist Species Found by Landscape & Plot",
-       fill = "Plot")
+       fill = "Plot")+
+  theme_linedraw()
 ```
 
 ```{r}
@@ -335,7 +336,8 @@ insects_ah %>%
   geom_boxplot(na.rm = T)+
   labs(x = "Landscape", y = NULL,
        title = "No. of Redlist Species Found by Landscape & Plot",
-       fill = "Plot")
+       fill = "Plot")+
+  theme_linedraw()
 ```
 
 Build a Map:
@@ -494,19 +496,7 @@ insects_ts %>%
   theme_linedraw()
 ```
 
-## Shiny App - Andrei
-```{r, eval=F, echo=T}
-
-```
-
-
-## Shiny App - Arlette
-```{r, eval=F, echo=T}
-
-```
-
-
-## Shiny App - Tyler
+## Shiny App - Tyler, Arlette, Andrei
 ```{r, eval=F, echo=T}
 
 ```
