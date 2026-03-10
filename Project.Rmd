@@ -9,6 +9,28 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Outline
+
+1. Clean Data
+    - clean names of variables
+    - remove any NAs 
+    - rename lengthier variable names
+    - translate coordinates from European to longitude, latitude
+    - save cleaned data as own .csv file
+    
+2. Data Exploration
+    - Arlette: Are there any trends for number of redlisted species and landscape/plot types?
+      - What could this mean?
+    - Tyler: Are there any trends for total biomass and landscape/plot types?
+      - What could this mean?
+    - Andrei: Are there any hidden trends for total biomass and weather (temperature, humidity, precipitation)?
+      - What could this mean?
+
+3. Shiny App
+    - display total biomass or number of redlisted species per plot
+      - can change landscape type
+      - can change plot type
+
 ## Load the Libraries
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -108,156 +130,10 @@ insects %>%
 write_csv(insects, "data/insects_main.csv")
 ```
 
-## Data Exploration - Andrei
-```{r}
-#load cleaned data as own variable (to not alter others' work)
-insects_ag <- read.csv("data/insects_main.csv")
-```
-
-```{r}
-#check data structure
-glimpse(insects_ag)
-```
-
-```{r}
-#map
-insects_ag %>%
-  filter(biomass != "NA")%>%
-  select(lat, long) %>% 
-  summary()
-```
-
-```{r}
-register_stadiamaps("824e1e2a-26b0-4511-874e-b93a502f5dce", write = FALSE)
-```
-
-```{r}
-lat<- c(46.12, 48.76)
-long<- c(10.59, 13.41)
-bbox<- make_bbox(long, lat, f=0.05)
-```
-
-```{r}
-#map of where the data came from (hopefully)
-map1<- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 7)
-```
-
-```{r}
-ggmap(map1)+
-  geom_point(data=insects_ag %>%
-               filter(long != "NA" & lat != "NA" & biomass!="NA"), aes(long, lat), size=0.8)+
-  labs(x="Longitude", y="Latitude", title="Sites Where Biomass was Found")
-```
-
-```{r}
-#average humidity and biomass
-insects_ag%>%
-  filter(biomass != "NA" & avg_humidity != "NA")%>%
-  group_by(avg_humidity)%>%
-  summarise(total_biomass=sum(biomass), n=n())%>%
-  select(avg_humidity, total_biomass, n)%>%
-  arrange(desc(n))
-```
-
-```{r}
-#plot average humidity and biomass
-insects_ag%>%
-  filter(biomass != "NA" & avg_humidity != "NA")%>%
-  group_by(avg_humidity)%>%
-  summarise(total_biomass=sum(biomass))%>%
-  ggplot(aes(x = avg_humidity, y = total_biomass))+
-  geom_point(na.rm=TRUE)+
-  geom_smooth(method=lm, se=T, na.rm=T)+
-  labs(x = "Average Humidity",
-       y = "Total Biomass",
-       title = "Average Humidity vs Total Biomass")+
-  theme_linedraw()
-
-#no strong trend found
-```
-
-```{r}
-#average temperature and biomass
-insects_ag%>%
-  filter(biomass != "NA" & avg_temp != "NA")%>%
-  group_by(avg_temp)%>%
-  summarise(total_biomass=sum(biomass), n=n())%>%
-  select(avg_temp, total_biomass, n)%>%
-  arrange(desc(n))
-```
-
-```{r}
-#plot average temperature and biomass
-insects_ag%>%
-  filter(biomass != "NA" & avg_temp != "NA")%>%
-  group_by(avg_temp)%>%
-  summarise(total_biomass=sum(biomass))%>%
-  ggplot(aes(x = avg_temp, y = total_biomass))+
-  geom_point(na.rm=TRUE)+
-  geom_smooth(method=lm, se=T, na.rm=T)+
-  labs(x = "Average Temperature",
-       y = "Total Biomass",
-        title = "Average Temp vs Total Biomass")+
-  theme_linedraw()
-
-#no strong trend found
-```
-
-```{r}
-#longterm mean annual precipitation and biomass
-insects_ag%>%
-  filter(lt_mean_annual_precip != "NA" & biomass != "NA")%>%
-  group_by(lt_mean_annual_precip)%>%
-  summarise(total_biomass=sum(biomass), n=n())%>%
-  select(lt_mean_annual_precip, total_biomass, n)%>%
-  arrange(desc(n))
-```
-
-```{r}
-#plot longterm mean annual precipitation and biomass
-insects_ag%>%
-  filter(lt_mean_annual_precip != "NA" & biomass != "NA")%>%
-  group_by(lt_mean_annual_precip)%>%
-  summarise(total_biomass=sum(biomass))%>%
-  ggplot(aes(x = lt_mean_annual_precip, y = total_biomass))+
-  geom_point(na.rm=TRUE)+
-  geom_smooth(method=lm, se=T, na.rm=T)+
-  labs(x = "Longterm Mean Annual Precipitation",
-       y = "Total Biomass",
-        title = "Longterm Mean Annual Precipitation vs Total Biomass")+
-  theme_linedraw()
-
-#no strong trend found
-```
-
-```{r}
-#longterm mean annual average-near surface temperature and biomass
-insects_ag%>%
-  filter(lt_mean_annual_avg_ns_temp != "NA" & biomass != "NA")%>%
-  group_by(lt_mean_annual_avg_ns_temp)%>%
-  summarise(total_biomass=sum(biomass), n=n())%>%
-  select(lt_mean_annual_avg_ns_temp, total_biomass, n)%>%
-  arrange(desc(n))
-```
-
-```{r}
-#plot longterm mean annual average-near surface temperature and biomass
-insects_ag%>%
-  filter(lt_mean_annual_avg_ns_temp != "NA" & biomass != "NA")%>%
-  group_by(lt_mean_annual_avg_ns_temp)%>%
-  summarise(total_biomass=sum(biomass), n=n())%>%
-  ggplot(aes(x = lt_mean_annual_avg_ns_temp, y = total_biomass))+
-  geom_point(na.rm=TRUE)+
-  geom_smooth(method=lm, se=T, na.rm=T)+
-  labs(x = "Longterm Mean Annual Average-Near Surface Temperature",
-       y = "Total Biomass",
-        title = "Longterm Mean Annual Average-Near Surface Temperature vs Total Biomass")+
-  theme_linedraw()
-
-#no strong trend found
-```
-
 ## Data Exploration - Arlette
+
+My Question: How does the number of red-listed species compare across landscape & plot type?
+
 ```{r}
 #load cleaned data as own variable (to not alter others' work)
 insects_ah <- read.csv("data/insects_main.csv")
@@ -268,8 +144,6 @@ insects_ah <- read.csv("data/insects_main.csv")
 insects_ah %>%
   glimpse()
 ```
-
-My Questions: How does the number of red-listed species compare across landscape & plot type?
 
 landscape_type & plot_type:
 ```{r}
@@ -313,14 +187,14 @@ insects_ah %>%
   na.omit() %>%
   summarize(total_rl_richness = sum(rl_richness),
             .groups='keep') %>%
-  ggplot(mapping=aes(x = reorder(landscape_type, total_rl_richness),
+  ggplot(mapping=aes(x = reorder(plot_type, total_rl_richness),
                      y = total_rl_richness,
-                     fill = plot_type))+
+                     fill = landscape_type))+
   geom_col(position = "dodge", color = "black", na.rm=T)+
   coord_flip()+
-  labs(x = "Landscape", y = NULL,
-       title = "No. of Redlist Species Found by Landscape & Plot",
-       fill = "Plot")+
+  labs(x = "Plot Type", y = NULL,
+       title = "No. of Redlist Species Found by Plot Type & Landscape",
+       fill = "Landscape Type")+
   theme_linedraw()
 ```
 
@@ -330,13 +204,13 @@ insects_ah %>%
   group_by(landscape_type, plot_type) %>%
   select(landscape_type, plot_type, rl_richness) %>%
   na.omit() %>%
-  ggplot(mapping=aes(x = reorder(landscape_type, rl_richness),
+  ggplot(mapping=aes(x = reorder(plot_type, rl_richness),
                      y = rl_richness,
-                     fill = plot_type))+
+                     fill = landscape_type))+
   geom_boxplot(na.rm = T)+
-  labs(x = "Landscape", y = NULL,
-       title = "No. of Redlist Species Found by Landscape & Plot",
-       fill = "Plot")+
+  labs(x = "Plot Type", y = NULL,
+       title = "No. of Redlist Species Found by Plot Type & Lanscape",
+       fill = "Landscape Type")+
   theme_linedraw()
 ```
 
@@ -385,9 +259,11 @@ ggmap(map)+
   labs(x="Longitude", y="Latitude", title="Locations of Redlist Species by Plot Type")
 ```
 
+Conclusion: The number of redlisted species is lowest in agricultural landscape & arable fields. Possible reasons are the use of pesticides or lack of edible plants (food grown for humans is not always edible to native insects).
+
 ## Data Exploration - Tyler
 
-My Questions: How does the biomass collected (g) compare across landscape & plot type?
+My Question: How does the biomass collected (g) compare across landscape & plot type?
 
 ```{r}
 #load cleaned data as own variable (to not alter others' work)
@@ -459,7 +335,8 @@ insects_ts %>%
   group_by(plot_type, landscape_type) %>%
   select(landscape_type,plot_type, biomass) %>%
   na.omit() %>%
-  summarize(total_biomass = sum(biomass), n = n()) %>%
+  summarize(total_biomass = sum(biomass), n = n(),
+            .groups = 'keep') %>%
   arrange(desc(n))
 
 #Sampling is not even across plot/landscape types. Differences in the total biomass below are likely influenced sampling differences. 
@@ -471,7 +348,8 @@ insects_ts %>%
   group_by(plot_type, landscape_type) %>% 
   select(landscape_type, plot_type, biomass) %>%
   na.omit() %>%
-  summarize(tot_biomass=sum(biomass)) %>% 
+  summarize(tot_biomass=sum(biomass),
+            .groups = 'keep') %>% 
   mutate(land_plot=paste(plot_type, landscape_type, sep = "/")) %>%
   ggplot(aes(x=tot_biomass, y=reorder(land_plot, tot_biomass), fill=land_plot))+
   geom_col()+
@@ -498,6 +376,163 @@ insects_ts %>%
        fill = "Landscape Type")+
   theme_linedraw()
 ```
+
+Conclusion: The total biomass is lowest in urban landscapes & settlements. This points to the trend seen in redlisted species is due to a lack of edible plants in arable fields (food grown for humans is not always edible to native insects).
+
+
+## Data Exploration - Andrei
+
+My Question: Are there hidden factors from weather (temperatur, humidity, precipitation) influencing total biomass trends?
+
+```{r}
+#load cleaned data as own variable (to not alter others' work)
+insects_ag <- read.csv("data/insects_main.csv")
+```
+
+```{r}
+#check data structure
+glimpse(insects_ag)
+```
+
+```{r}
+#map
+insects_ag %>%
+  filter(biomass != "NA")%>%
+  select(lat, long) %>% 
+  summary()
+```
+
+```{r}
+register_stadiamaps("824e1e2a-26b0-4511-874e-b93a502f5dce", write = FALSE)
+```
+
+```{r}
+lat<- c(46.12, 48.76)
+long<- c(10.59, 13.41)
+bbox<- make_bbox(long, lat, f=0.05)
+```
+
+```{r}
+#map of where the data came from (hopefully)
+map1<- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 7)
+```
+
+```{r}
+ggmap(map1)+
+  geom_point(data=insects_ag %>%
+               filter(long != "NA" & lat != "NA" & biomass!="NA"), aes(long, lat), size=0.8)+
+  labs(x="Longitude", y="Latitude", title="Sites Where Biomass was Found")
+```
+
+```{r}
+#average humidity and biomass
+insects_ag%>%
+  filter(biomass != "NA" & avg_humidity != "NA")%>%
+  group_by(avg_humidity)%>%
+  summarise(total_biomass=sum(biomass), n=n())%>%
+  select(avg_humidity, total_biomass, n)%>%
+  arrange(desc(n))
+```
+
+```{r}
+#plot average humidity and biomass
+insects_ag%>%
+  filter(biomass != "NA" & avg_humidity != "NA")%>%
+  group_by(avg_humidity)%>%
+  summarise(total_biomass=sum(biomass))%>%
+  ggplot(aes(x = avg_humidity, y = total_biomass))+
+  geom_point(na.rm=TRUE)+
+  geom_smooth(method=lm, se=T, na.rm=T)+
+  labs(x = "Average Humidity (%)",
+       y = "Total Biomass (g)",
+       title = "Average Humidity vs Total Biomass")+
+  theme_linedraw()
+
+#no strong trend found
+```
+
+```{r}
+#average temperature and biomass
+insects_ag%>%
+  filter(biomass != "NA" & avg_temp != "NA")%>%
+  group_by(avg_temp)%>%
+  summarise(total_biomass=sum(biomass), n=n())%>%
+  select(avg_temp, total_biomass, n)%>%
+  arrange(desc(n))
+```
+
+```{r}
+#plot average temperature and biomass
+insects_ag%>%
+  filter(biomass != "NA" & avg_temp != "NA")%>%
+  group_by(avg_temp)%>%
+  summarise(total_biomass=sum(biomass))%>%
+  ggplot(aes(x = avg_temp, y = total_biomass))+
+  geom_point(na.rm=TRUE)+
+  geom_smooth(method=lm, se=T, na.rm=T)+
+  labs(x = "Average Temperature (C)",
+       y = "Total Biomass (g)",
+        title = "Average Temp vs Total Biomass")+
+  theme_linedraw()
+
+#no strong trend found
+```
+
+```{r}
+#longterm mean annual precipitation and biomass
+insects_ag%>%
+  filter(lt_mean_annual_precip != "NA" & biomass != "NA")%>%
+  group_by(lt_mean_annual_precip)%>%
+  summarise(total_biomass=sum(biomass), n=n())%>%
+  select(lt_mean_annual_precip, total_biomass, n)%>%
+  arrange(desc(n))
+```
+
+```{r}
+#plot longterm mean annual precipitation and biomass
+insects_ag%>%
+  filter(lt_mean_annual_precip != "NA" & biomass != "NA")%>%
+  group_by(lt_mean_annual_precip)%>%
+  summarise(total_biomass=sum(biomass))%>%
+  ggplot(aes(x = lt_mean_annual_precip, y = total_biomass))+
+  geom_point(na.rm=TRUE)+
+  geom_smooth(method=lm, se=T, na.rm=T)+
+  labs(x = "Longterm Mean Annual Precipitation (mm)",
+       y = "Total Biomass (g)",
+        title = "Longterm Mean Annual Precipitation vs Total Biomass")+
+  theme_linedraw()
+
+#no strong trend found
+```
+
+```{r}
+#longterm mean annual average-near surface temperature and biomass
+insects_ag%>%
+  filter(lt_mean_annual_avg_ns_temp != "NA" & biomass != "NA")%>%
+  group_by(lt_mean_annual_avg_ns_temp)%>%
+  summarise(total_biomass=sum(biomass), n=n())%>%
+  select(lt_mean_annual_avg_ns_temp, total_biomass, n)%>%
+  arrange(desc(n))
+```
+
+```{r}
+#plot longterm mean annual average-near surface temperature and biomass
+insects_ag%>%
+  filter(lt_mean_annual_avg_ns_temp != "NA" & biomass != "NA")%>%
+  group_by(lt_mean_annual_avg_ns_temp)%>%
+  summarise(total_biomass=sum(biomass), n=n())%>%
+  ggplot(aes(x = lt_mean_annual_avg_ns_temp, y = total_biomass))+
+  geom_point(na.rm=TRUE)+
+  geom_smooth(method=lm, se=T, na.rm=T)+
+  labs(x = "Longterm Mean Annual Average-Near Surface Temperature (C)",
+       y = "Total Biomass (g)",
+        title = "Longterm Mean Annual Average-Near Surface Temperature vs Total Biomass")+
+  theme_linedraw()
+
+#no strong trend found
+```
+
+Conclusion: There are no hidden causal factors in the weather (temperature, humidity, precipitation) on trends seen in total biomass.
 
 ## Shiny App - Tyler, Arlette, Andrei
 ```{r, eval=F, echo=T}
