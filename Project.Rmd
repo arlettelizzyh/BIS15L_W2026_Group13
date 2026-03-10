@@ -167,7 +167,7 @@ insects_ag%>%
   summarise(total_biomass=sum(biomass))%>%
   ggplot(aes(x = avg_humidity, y = total_biomass))+
   geom_point(na.rm=TRUE)+
-  geom_smooth(method=lm, se=F, na.rm=T)+
+  geom_smooth(method=lm, se=T, na.rm=T)+
   labs(x = "Average Humidity",
        y = "Total Biomass",
        title = "Average Humidity vs Total Biomass")+
@@ -194,7 +194,7 @@ insects_ag%>%
   summarise(total_biomass=sum(biomass))%>%
   ggplot(aes(x = avg_temp, y = total_biomass))+
   geom_point(na.rm=TRUE)+
-  geom_smooth(method=lm, se=F, na.rm=T)+
+  geom_smooth(method=lm, se=T, na.rm=T)+
   labs(x = "Average Temperature",
        y = "Total Biomass",
         title = "Average Temp vs Total Biomass")+
@@ -221,7 +221,7 @@ insects_ag%>%
   summarise(total_biomass=sum(biomass))%>%
   ggplot(aes(x = lt_mean_annual_precip, y = total_biomass))+
   geom_point(na.rm=TRUE)+
-  geom_smooth(method=lm, se=F, na.rm=T)+
+  geom_smooth(method=lm, se=T, na.rm=T)+
   labs(x = "Longterm Mean Annual Precipitation",
        y = "Total Biomass",
         title = "Longterm Mean Annual Precipitation vs Total Biomass")+
@@ -248,7 +248,7 @@ insects_ag%>%
   summarise(total_biomass=sum(biomass), n=n())%>%
   ggplot(aes(x = lt_mean_annual_avg_ns_temp, y = total_biomass))+
   geom_point(na.rm=TRUE)+
-  geom_smooth(method=lm, se=F, na.rm=T)+
+  geom_smooth(method=lm, se=T, na.rm=T)+
   labs(x = "Longterm Mean Annual Average-Near Surface Temperature",
        y = "Total Biomass",
         title = "Longterm Mean Annual Average-Near Surface Temperature vs Total Biomass")+
