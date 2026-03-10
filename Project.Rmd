@@ -386,9 +386,113 @@ ggmap(map)+
 ## Data Exploration - Tyler
 ```{r}
 #load cleaned data as own variable (to not alter others' work)
-insects_ts <- read.csv("data/insects_main.csv")
+insects_ts <- read_csv("data/insects_main.csv")
 ```
 
+```{r}
+#Variable Definitions:
+# Biomass = Insect biomass in g.
+# Landscape_Type = Landscape category of quadrant (agricultural, semi-natural, or urban).
+# Plot_Type = Habitat category of plot (arable field, forest, meadow, natural, or settlement).
+
+#Check landscape_type vs biomass
+insects_ts %>%
+  group_by(landscape_type) %>%
+  select(landscape_type, biomass) %>%
+  na.omit() %>%
+  summarize(total_biomass = sum(biomass), n = n()) %>%
+  arrange(desc(total_biomass))
+
+#Sampling is not even across landscape types.
+```
+
+```{r}
+#Check plot_type vs biomass
+insects_ts %>%
+  group_by(plot_type) %>%
+  select(plot_type, biomass) %>%
+  na.omit() %>%
+  summarize(total_biomass = sum(biomass), n = n()) %>%
+  arrange(desc(total_biomass))
+
+#Sampling is not even across plot types.
+```
+
+```{r}
+#boxplot of landscape_type vs biomass by plot_type
+insects_ts %>%
+  group_by(landscape_type, plot_type) %>%
+  select(landscape_type, plot_type, biomass) %>%
+  na.omit() %>%
+  ggplot(aes(x = reorder(landscape_type, biomass), y = biomass, fill = plot_type))+
+  geom_boxplot()+
+  labs(title = "Biomass Found by Landscape and Plot Type",
+       x="Landscape Type",
+       y = NULL,
+       fill = "Plot Type")+
+  theme_linedraw()
+```
+
+```{r}
+#boxplot of plot_type vs biomass by landscape_type
+insects_ts %>%
+  group_by(landscape_type, plot_type) %>%
+  select(landscape_type, plot_type, biomass) %>%
+  na.omit() %>%
+  ggplot(aes(x = reorder(plot_type, biomass), y = biomass, fill = landscape_type))+
+  geom_boxplot()+
+  labs(title = "Biomass Found by Plot and Landscape Type",
+       x="Plot Type",
+       y = NULL,
+       fill = "Landscape Type")+
+  theme_linedraw()
+```
+
+```{r}
+#Check landscape_type vs biomass
+insects_ts %>%
+  group_by(plot_type, landscape_type) %>%
+  select(landscape_type,plot_type, biomass) %>%
+  na.omit() %>%
+  summarize(total_biomass = sum(biomass), n = n()) %>%
+  arrange(desc(n))
+
+#Sampling is not even across plot/landscape types. Differences in the total biomass below are likely influenced sampling differences. 
+```
+
+```{r}
+#graph of the total biomass collected in every landscape/plot type combina
+insects_ts %>% 
+  group_by(plot_type, landscape_type) %>% 
+  select(landscape_type, plot_type, biomass) %>%
+  na.omit() %>%
+  summarize(tot_biomass=sum(biomass)) %>% 
+  mutate(land_plot=paste(plot_type, landscape_type, sep = "/")) %>%
+  ggplot(aes(x=tot_biomass, y=reorder(land_plot, tot_biomass), fill=land_plot))+
+  geom_col()+
+  labs(title="Total Insect Biomass per Land/Plot Type",
+       y=NULL,
+       x="Total Biomass (g)")+
+  theme_linedraw()+
+  theme(legend.position = "none")
+```
+
+```{r}
+#boxplot of plot_type vs biomass by landscape_type
+insects_ts %>%
+  filter(excluded!=1) %>% 
+  group_by(plotid) %>% 
+  summarize(biomass=sum(biomass), landscape_type=landscape_type[1], plot_type=plot_type[1]) %>% 
+  select(landscape_type, plot_type, biomass) %>%
+  na.omit() %>%
+  ggplot(aes(x = reorder(plot_type, biomass), y = biomass, fill = landscape_type))+
+  geom_boxplot()+
+  labs(title = "Range of Total Plot Biomass by Plot Type and Landscape Type",
+       x="Plot Type",
+       y = NULL,
+       fill = "Landscape Type")+
+  theme_linedraw()
+```
 
 ## Shiny App - Andrei
 ```{r, eval=F, echo=T}
