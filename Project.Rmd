@@ -11,15 +11,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Outline
 
-1. Clean Data
+1. Load the Libraries
+2. Load in Data
+3. Check Data Structure
+4. Clean Data
     - clean names of variables
-    - remove any NAs 
+    - handle any hidden NAs 
     - rename lengthier variable names
     - translate coordinates from European to longitude, latitude
     - save cleaned data as own .csv file
     
 2. Data Exploration
-    - Arlette: Are there any trends for number of redlisted species and landscape/plot types?
+    - Arlette: Are there any trends for number of red-listed species and landscape/plot types?
       - What could this mean?
     - Tyler: Are there any trends for total biomass and landscape/plot types?
       - What could this mean?
@@ -27,7 +30,7 @@ knitr::opts_chunk$set(echo = TRUE)
       - What could this mean?
 
 3. Shiny App
-    - display total biomass or number of redlisted species per plot
+    - display total biomass or number of red-listed species per plot
       - can change landscape type
       - can change plot type
 
@@ -148,7 +151,7 @@ insects_ah %>%
 landscape_type & plot_type:
 ```{r}
 #Variable Definitions:
-# RL_Richness = No. of species on red-lists for Bavaria/Germany per plot & time frame.
+# RL_Richness = No. of species on the Red List of Threatened Species for Bavaria/Germany per plot & time frame.
 # Landscape_Type = Landscape category of quadrant (agricultural, semi-natural, or urban).
 # Plot_Type = Habitat category of plot (arable field, forest, meadow, natural, or settlement).
 # Landscape (Quadrant) > Plot
@@ -175,7 +178,7 @@ insects_ah %>%
   arrange(desc(total_rl_richness))
 
 #Sampling uneven across plot types. Forests may have just been more prevalent.
-#Arable fields sampling on par with meadow & greater than settlement but have much less redlist species.
+#Arable fields sampling on par with meadow & greater than settlement but have far fewer red-listed species.
 #Forest >>> Meadow > Settlement >> Arable Field (pesticides?)
 ```
 
@@ -193,7 +196,7 @@ insects_ah %>%
   geom_col(position = "dodge", color = "black", na.rm=T)+
   coord_flip()+
   labs(x = "Plot Type", y = NULL,
-       title = "No. of Redlist Species Found by Plot Type & Landscape",
+       title = "No. of Red-Listed Species Found by Plot Type & Landscape",
        fill = "Landscape Type")+
   theme_linedraw()
 ```
@@ -209,7 +212,7 @@ insects_ah %>%
                      fill = landscape_type))+
   geom_boxplot(na.rm = T)+
   labs(x = "Plot Type", y = NULL,
-       title = "No. of Redlist Species Found by Plot Type & Lanscape",
+       title = "No. of Red-Listed Species Found by Plot Type & Landscape",
        fill = "Landscape Type")+
   theme_linedraw()
 ```
@@ -247,7 +250,7 @@ ggmap(map)+
   geom_point(data=insects_ah %>%
                filter(rl_richness > 0),
              aes(long, lat, shape = landscape_type), color="black", size=2, alpha=0.3)+
-  labs(x="Longitude", y="Latitude", title="Locations of Redlist Species by Landscape Type")
+  labs(x="Longitude", y="Latitude", title="Locations of Red-Listed Species by Landscape Type")
 ```
 
 ```{r}
@@ -256,10 +259,10 @@ ggmap(map)+
   geom_point(data=insects_ah %>%
                filter(rl_richness > 0),
              aes(long, lat, shape = plot_type), color="black", size=2, alpha=0.3)+
-  labs(x="Longitude", y="Latitude", title="Locations of Redlist Species by Plot Type")
+  labs(x="Longitude", y="Latitude", title="Locations of Red-Listed Species by Plot Type")
 ```
 
-Conclusion: The number of redlisted species is lowest in agricultural landscape & arable fields. Possible reasons are the use of pesticides or lack of edible plants (food grown for humans is not always edible to native insects).
+Conclusion: The number of red-listed species is lowest in agricultural landscape & arable fields. Possible reasons are the use of pesticides or lack of edible plants (food grown for humans is not always edible to native insects).
 
 ## Data Exploration - Tyler
 
@@ -343,7 +346,7 @@ insects_ts %>%
 ```
 
 ```{r}
-#graph of the total biomass collected in every landscape/plot type combina
+#graph of the total biomass collected in every landscape/plot type combination
 insects_ts %>% 
   group_by(plot_type, landscape_type) %>% 
   select(landscape_type, plot_type, biomass) %>%
@@ -377,12 +380,12 @@ insects_ts %>%
   theme_linedraw()
 ```
 
-Conclusion: The total biomass is lowest in urban landscapes & settlements. This points to the trend seen in redlisted species is due to a lack of edible plants in arable fields (food grown for humans is not always edible to native insects).
+Conclusion: The total biomass is lowest in urban landscapes & settlements. This points to the trend seen in red-listed species is due to a lack of edible plants in arable fields (food grown for humans is not always edible to native insects). There could be hidden factors in weather.
 
 
 ## Data Exploration - Andrei
 
-My Question: Are there hidden factors from weather (temperatur, humidity, precipitation) influencing total biomass trends?
+My Question: Are there hidden factors from weather (temperature, humidity, precipitation) influencing total biomass trends?
 
 ```{r}
 #load cleaned data as own variable (to not alter others' work)
@@ -532,7 +535,7 @@ insects_ag%>%
 #no strong trend found
 ```
 
-Conclusion: There are no hidden causal factors in the weather (temperature, humidity, precipitation) on trends seen in total biomass.
+Conclusion: For trends seen in total biomass, no hidden causal factors from weather (temperature, humidity, precipitation) were found.
 
 ## Shiny App - Tyler, Arlette, Andrei
 ```{r, eval=F, echo=T}
