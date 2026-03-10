@@ -431,7 +431,7 @@ insects_ts %>%
   na.omit() %>%
   ggplot(aes(x = reorder(landscape_type, biomass), y = biomass, fill = plot_type))+
   geom_boxplot()+
-  labs(title = "Biomass Found by Landscape and Plot Type",
+  labs(title = "Range of Biomass Found by Landscape and Plot Type",
        x="Landscape Type",
        y = NULL,
        fill = "Plot Type")+
@@ -446,7 +446,7 @@ insects_ts %>%
   na.omit() %>%
   ggplot(aes(x = reorder(plot_type, biomass), y = biomass, fill = landscape_type))+
   geom_boxplot()+
-  labs(title = "Biomass Found by Plot and Landscape Type",
+  labs(title = "Range of Biomass Found by Plot and Landscape Type",
        x="Plot Type",
        y = NULL,
        fill = "Landscape Type")+
