@@ -46,6 +46,8 @@ library(shiny)
 library(shinydashboard)
 ```
 
+This data is from a 2019 field study conducted in Bavaria, Germany. It looked at the relationship between total insect biomass, species richness, land use, and climate. https://datadryad.org/dataset/doi:10.5061/dryad.zkh1893bb
+
 ## Load in Data
 ```{r}
 insects <- read_csv2("data/insect_raw/Data_Uhler_2021_main.csv") %>%
@@ -543,34 +545,35 @@ ui <- dashboardPage(
   
   dashboardHeader(title="Take A Closer Look!"),
   
-  dashboardSidebar(disable = T),
-  
-  dashboardBody(
+  dashboardSidebar(
     
-    h3("Choose Landscape Type and Plot Type:"),
-    
-    radioButtons("lnd_type", "Landscape Type:",
+    radioButtons("lnd_type", "Select Landscape Type:",
                choices = c("All", "Agricultural", "Semi-natural", "Urban"),
                selected = "All", inline = TRUE),
     
-    radioButtons("plt_type", "Plot Type:",
+    radioButtons("plt_type", "Select Plot Type:",
                choices = c("All", "settlement", "meadow", "arable field", "forest"),
                selected = "All", inline = TRUE),
     
-    h3("Select Plot:"),
-    
     selectInput("x",
-              "Select Plot",
-              choices=NULL),
+              "Select Plot:",
+              choices=NULL)
     
-    #plotOutput("plot", width="500px", height="400px")
-    h3("Plot Info:"),
+  ),
+  
+  dashboardBody(
     
-    h4("Total Biomass Collected In Grams:"),
+    h4("Total Grams of Biomass:"),
     textOutput("biomass"),
     
-    h4("Total Number of Species on the Red List:"),
-    textOutput("rl")
+    h4("Total No. of Red-Listed Species:"),
+    textOutput("rl"),
+    
+    h4("Map:"),
+    plotOutput("plot", width="300px", height= "400px"),
+    
+    helpText("Source: Uhler, J., et. al.; Relationship of insect biomass and richness with land use along a climate gradient. Nature Communications 12 October 2021; 12: 5946. https://doi.org/10.1038/s41467-021-26181-3")
+    
   )
 )
 
@@ -613,6 +616,78 @@ server <- function(input, output, session) {
       as.character()
   })
   
+  output$plot <- renderPlot({
+    
+    if (input$lnd_type == "All" & input$plt_type == "All"){
+      ggmap(map)+
+        geom_point(data=insects_ah %>%
+                     filter(biomass > 0 
+                            & long != "NA" 
+                            & lat != "NA") %>%
+                     select(biomass, long, lat),
+                   aes(long, lat), color="black", size=3, alpha=0.4)+
+        geom_point(data=insects_ah %>%
+                     filter(rl_richness > 0 
+                            & long != "NA" 
+                            & lat != "NA") %>%
+                     select(rl_richness, long, lat),
+                   aes(long, lat), color="red2", size=3, alpha=0.15)+
+        labs(x="Longitude", y="Latitude", title=NULL)
+    }else if (input$lnd_type == "All" & input$plt_type != "All"){
+    ggmap(map)+
+        geom_point(data=insects_ah %>%
+                     filter(plot_type == input$plt_type 
+                            & biomass > 0 
+                            & long != "NA" 
+                            & lat != "NA") %>%
+                     select(biomass, long, lat),
+                   aes(long, lat), color="black", size=3, alpha=0.4)+
+        geom_point(data=insects_ah %>%
+                     filter(plot_type == input$plt_type 
+                            & rl_richness > 0 
+                            & long != "NA" 
+                            & lat != "NA") %>%
+                     select(rl_richness, long, lat),
+                   aes(long, lat), color="red2", size=3, alpha=0.2)+
+        labs(x="Longitude", y="Latitude", title=NULL)
+    }else if(input$lnd_type != "All" & input$plt_type == "All"){
+    ggmap(map)+
+        geom_point(data=insects_ah %>%
+                     filter(landscape_type == input$lnd_type 
+                            & biomass > 0 
+                            & long != "NA" 
+                            & lat != "NA") %>%
+                     select(biomass, long, lat),
+                   aes(long, lat), color="black", size=3, alpha=0.4)+
+        geom_point(data=insects_ah %>%
+                     filter(landscape_type == input$lnd_type 
+                            & rl_richness > 0 
+                            & long != "NA" 
+                            & lat != "NA") %>%
+                     select(rl_richness, long, lat),
+                   aes(long, lat), color="red2", size=3, alpha=0.2)+
+        labs(x="Longitude", y="Latitude", title=NULL)
+    }else{
+    ggmap(map)+
+        geom_point(data=insects_ah %>%
+                     filter(landscape_type == input$lnd_type 
+                            & plot_type == input$plt_type 
+                            & biomass > 0 
+                            & long != "NA" 
+                            & lat != "NA") %>%
+                     select(biomass, long, lat),
+                   aes(long, lat), color="black", size=3, alpha=0.4)+
+        geom_point(data=insects_ah %>%
+                     filter(landscape_type == input$lnd_type 
+                            & plot_type == input$plt_type 
+                            & rl_richness > 0 
+                            & long != "NA" 
+                            & lat != "NA") %>%
+                     select(rl_richness, long, lat),
+                   aes(long, lat), color="red2", size=3, alpha=0.2)+
+        labs(x="Longitude", y="Latitude", title=NULL)
+    }
+  })
 }
 
 shinyApp(ui, server)
