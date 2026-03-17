@@ -1,5 +1,5 @@
 ---
-title: "Project"
+title: "Insect Biomass & Red-Listed Species"
 author: "Andrei Graham, Arlette Hall, Tyler Sousa"
 date: "2026-03-06"
 output: html_document
@@ -17,26 +17,25 @@ knitr::opts_chunk$set(echo = TRUE)
 4. Clean Data
     - clean names of variables
     - handle any hidden NAs 
-    - rename lengthier variable names
+    - rename lengthier variables
     - translate coordinates from European to longitude, latitude
     - save cleaned data as own .csv file
-    
-2. Data Exploration
+5. Data Exploration
     - Arlette: Are there any trends for number of red-listed species and landscape/plot types?
-      - What could this mean?
+      * What could this mean?
     - Tyler: Are there any trends for total biomass and landscape/plot types?
-      - What could this mean?
+      * What could this mean?
     - Andrei: Are there any hidden trends for total biomass and weather (temperature, humidity, precipitation)?
-      - What could this mean?
-
-3. Shiny App
-    - display total biomass or number of red-listed species per plot
-      - adjusts with landscape type
-      - adjusts with plot type
-      - adjusts with individual plot
+      * What could this mean?
+6. Conclusions
+7. Shiny App
+    - display total biomass or number of red-listed species
+      * adjusts with landscape type
+      * adjusts with plot type
+      * adjusts with individual plot
     - display map with sample collection sites
-      - adjusts with landscape type
-      - adjusts with plot type
+      * adjusts with landscape type
+      * adjusts with plot type
 
 ## Load the Libraries
 ```{r message=FALSE, warning=FALSE}
@@ -53,7 +52,7 @@ This data is from a 2019 field study conducted in Bavaria, Germany. It looked at
 
 ## Load in Data - Tyler
 ```{r}
-insects <- read_csv2("data/insect_raw/Data_Uhler_2021_main.csv") %>%
+insects <- read_csv2("data/orig_data/Data_Uhler_2021_main.csv") %>%
   clean_names()
 ```
 
@@ -201,7 +200,7 @@ insects_ah %>%
   geom_col(position = "dodge", color = "black", na.rm=T)+
   coord_flip()+
   labs(x = "Plot Type", y = NULL,
-       title = "No. of Red-Listed Species Found by Plot Type & Landscape",
+       title = "No. of Red-Listed Species Found by Plot & Landscape Type",
        fill = "Landscape Type")+
   theme_linedraw()
 ```
@@ -217,7 +216,7 @@ insects_ah %>%
                      fill = landscape_type))+
   geom_boxplot(na.rm = T)+
   labs(x = "Plot Type", y = NULL,
-       title = "No. of Red-Listed Species Found by Plot Type & Landscape",
+       title = "No. of Red-Listed Species Found by Plot & Landscape Type",
        fill = "Landscape Type")+
   theme_linedraw()
 ```
@@ -267,7 +266,7 @@ ggmap(map)+
   labs(x="Longitude", y="Latitude", title="Locations of Red-Listed Species by Plot Type")
 ```
 
-Conclusion: The number of red-listed species is lowest in agricultural landscape & arable fields. Possible reasons are the use of pesticides or lack of edible plants (food grown for humans is not always edible to native insects).
+My Conclusion: The number of red-listed species is lowest in agricultural landscapes & arable fields. Possible reasons are the use of pesticides or lack of edible plants (food grown for humans is not always edible to native insects).
 
 ## Data Exploration - Tyler
 
@@ -385,7 +384,7 @@ insects_ts %>%
   theme_linedraw()
 ```
 
-Conclusion: The total biomass is lowest in urban landscapes & settlements. This points to the trend seen in red-listed species is due to a lack of edible plants in arable fields (food grown for humans is not always edible to native insects). There could be hidden factors in weather.
+My Conclusion: The total biomass is lowest in urban landscapes & settlements. This points to the trend seen in red-listed species is due to a lack of edible plants in arable fields (food grown for humans is not always edible to native insects). There could be hidden factors in weather.
 
 
 ## Data Exploration - Andrei
@@ -540,7 +539,11 @@ insects_ag%>%
 #no strong trend found
 ```
 
-Conclusion: For trends seen in total biomass, no hidden causal factors from weather (temperature, humidity, precipitation) were found.
+My Conclusion: For trends seen in total biomass, no hidden causal factors from weather (temperature, humidity, precipitation) were found.
+
+## Conclusions
+
+When taking sample size distribution into account, the number of red-listed species was lowest in agricultural landscapes and arable fields while total biomass was lowest in urban landscapes and settlements. No hidden causal factors from weather (temperature, humidity, precipitation) were found. This points to the problem possibly being that crops are inedible to red-listed species and not just pesticide use.
 
 ## Shiny App - Tyler, Arlette
 ```{r, eval=F, echo=T}
