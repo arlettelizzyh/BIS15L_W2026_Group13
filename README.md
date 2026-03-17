@@ -10,3 +10,10 @@ This is the repository for our group project!
 **Dataset**: https://datadryad.org/dataset/doi:10.5061/dryad.zkh1893bb 
 
 **Orginal Article**: https://doi.org/10.1038/s41467-021-26181-3
+
+## Files
+- Data (Cleaned): data -> insects_main.csv
+- Data (Original): data -> orig_data -> Data_Uhler_2021_main.csv
+- Presentation: BIS15L_Group13.pdf, BIS15L_Group13.pptx
+- Report: Project.html, Project.rmd
+- Study: data -> insect_article.pdf
