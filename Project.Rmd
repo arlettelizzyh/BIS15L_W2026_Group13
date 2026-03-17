@@ -31,8 +31,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 3. Shiny App
     - display total biomass or number of red-listed species per plot
-      - can change landscape type
-      - can change plot type
+      - adjusts with landscape type
+      - adjusts with plot type
+      - adjusts with individual plot
+    - display map with sample collection sites
+      - adjusts with landscape type
+      - adjusts with plot type
 
 ## Load the Libraries
 ```{r message=FALSE, warning=FALSE}
@@ -41,14 +45,13 @@ library(janitor)
 library(naniar)
 library(sf)
 library(ggmap)
-library(paletteer)
 library(shiny)
 library(shinydashboard)
 ```
 
 This data is from a 2019 field study conducted in Bavaria, Germany. It looked at the relationship between total insect biomass, species richness, land use, and climate. https://datadryad.org/dataset/doi:10.5061/dryad.zkh1893bb
 
-## Load in Data
+## Load in Data - Tyler
 ```{r}
 insects <- read_csv2("data/insect_raw/Data_Uhler_2021_main.csv") %>%
   clean_names()
@@ -539,7 +542,7 @@ insects_ag%>%
 
 Conclusion: For trends seen in total biomass, no hidden causal factors from weather (temperature, humidity, precipitation) were found.
 
-## Shiny App - Tyler, Arlette, Andrei
+## Shiny App - Tyler, Arlette
 ```{r, eval=F, echo=T}
 ui <- dashboardPage(
   
@@ -688,6 +691,7 @@ server <- function(input, output, session) {
         labs(x="Longitude", y="Latitude", title=NULL)
     }
   })
+
 }
 
 shinyApp(ui, server)
